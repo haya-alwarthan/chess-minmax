@@ -10,8 +10,11 @@
                 "-fopenmp",
                 "${fileDirname}\\**.cpp",
                 "${fileDirname}\\**.h",
+              
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "--include-directory=C:/dev/OpenCL/common/inc",
+              
             ],
             "options": {
                 "cwd": "${fileDirname}"

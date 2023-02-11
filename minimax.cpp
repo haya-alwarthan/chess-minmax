@@ -28,7 +28,6 @@ double minimax_alpha_beta(Node& root, Node& best, int depth, bool state, double 
     else if(state){
 
          vector<Node>::iterator it;
-         #pragma omp parallel   #pragma omp parallel  for default(shared) reduction(+:beta) 
         for(  it=root->next.begin(); it!=root->next.end(); it++){
     //         int nthreads, tid;
     // {
@@ -44,7 +43,6 @@ double minimax_alpha_beta(Node& root, Node& best, int depth, bool state, double 
 
             double val = minimax_alpha_beta(*it, best, depth+1, 0, alpha, beta);
             // cout<<"depth  :"<<depth<<endl;
-             #pragma omp critical
             if(val > alpha){
                 if(0 == depth){
                       
@@ -54,7 +52,7 @@ double minimax_alpha_beta(Node& root, Node& best, int depth, bool state, double 
                      
 
                     best = *it;}
-       #pragma omp atomic read
+    //    #pragma omp atomic read
                 alpha = val;
                 
             }
@@ -67,20 +65,18 @@ double minimax_alpha_beta(Node& root, Node& best, int depth, bool state, double 
     // MINIMIZING
     else{
 
-        vector<Node>::iterator it;
-            #pragma omp parallel  for default(shared) reduction(+:beta) 
+        vector<Node>::iterator it; 
         for(it=root->next.begin(); it!=root->next.end(); it++){
 
             double val = minimax_alpha_beta(*it, best, depth+1, 1, alpha, beta);
-        
             if(val < beta){
             
                 if(0 == depth){
                        cout<<"current thread at minmax best assign is : "<< omp_get_thread_num()<<endl;
                        cout <<"score:  "<<val<<endl;
-                    #pragma omp atomic read
+                    // #pragma omp atomic read
                     best = *it;}
-                    #pragma omp atomic read
+                    // #pragma omp atomic read
                 beta = val;
                  
             }
