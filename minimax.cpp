@@ -4,12 +4,11 @@
 #include "main.h"
 #include <omp.h>
 using namespace std;
-int static_evals = 0;
+
 
 
 // @param bool state :: MAXIMIZING=1, MINIMIZING=0
-
-double minimax_alpha_beta(Node& root, Node& best, int depth, bool state, double alpha, double beta){
+double minimax(Node& root, Node& best, int depth, bool state){
 
     // cout << "==========" << " DEPTH LEVEL " << depth << " ==========" << endl;
     bool f= true;
@@ -26,63 +25,45 @@ double minimax_alpha_beta(Node& root, Node& best, int depth, bool state, double 
 
     // MAXIMIZING
     else if(state){
-
+ double val= LOWEST_SCORE;
+ double dbl= val;
          vector<Node>::iterator it;
+          #pragma omp parallel  for
         for(  it=root->next.begin(); it!=root->next.end(); it++){
-    //         int nthreads, tid;
-    // {
-    //     tid = omp_get_thread_num();
-    // cout<< "inside minmax current thread"<< tid<<endl;
-    //     if (tid == 0){
-    //         nthreads = omp_get_num_threads();
-    //      cout<<"number of threads" << nthreads<<endl;
-    //     }
-    // }
-
-            //mutiple threads will execute this line below, so 
-
-            double val = minimax_alpha_beta(*it, best, depth+1, 0, alpha, beta);
-            // cout<<"depth  :"<<depth<<endl;
-            if(val > alpha){
-                if(0 == depth){
-                      
-                    cout<<"current thread at minmax best assign is : "<< omp_get_thread_num()<<endl;
+   
+             val = max (val, minimax(*it, best, depth+1, 0));
+                  #pragma omp critical
+            if(val>dbl  && depth==0){
+                 cout<<"current thread at minmax best assign is : "<< omp_get_thread_num()<<endl;
                     cout <<"score:  "<<val<<endl;
-                                  
-                     
-
-                    best = *it;}
-    //    #pragma omp atomic read
-                alpha = val;
-                
-            }
-            if(alpha >= beta)
-                {continue;}
+                    
+                dbl=val;
+         best = *it;}
         }
-        return alpha;
+       
+         return val;
+
     }
 
     // MINIMIZING
     else{
-
+ double val= HIGHEST_SCORE;
+ double dbl= val;
         vector<Node>::iterator it; 
+            #pragma omp parallel  for
         for(it=root->next.begin(); it!=root->next.end(); it++){
-
-            double val = minimax_alpha_beta(*it, best, depth+1, 1, alpha, beta);
-            if(val < beta){
-            
-                if(0 == depth){
-                       cout<<"current thread at minmax best assign is : "<< omp_get_thread_num()<<endl;
-                       cout <<"score:  "<<val<<endl;
-                    // #pragma omp atomic read
-                    best = *it;}
-                    // #pragma omp atomic read
-                beta = val;
-                 
-            }
-            if(alpha >= beta)
-                {continue;}
+             val = min(val, minimax(*it, best, depth+1, 1));
+                  #pragma omp critical
+                if(val<dbl && depth==0){
+                      cout<<"current thread at minmax best assign is : "<< omp_get_thread_num()<<endl;
+                    cout <<"score:  "<<val<<endl;
+                    
+                dbl=val;
+         best = *it;}
         }
-        return beta;
-    }
+                     return val;
+  
+        }
+
+    
 }

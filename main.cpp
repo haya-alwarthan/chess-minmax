@@ -87,9 +87,11 @@ double start;
 double end; 
 start = omp_get_wtime(); 
  
+        // minimax(root, best, 0, 0);
+        
         minimax_alpha_beta(root, best, 0, 0, LOWEST_SCORE, HIGHEST_SCORE);
         end = omp_get_wtime(); 
-        cout<<"Execution Time of Parallel Minimax Alphabeta is "<<end-start<<endl;
+        cout<<"Execution Time of Parallel Minimax  is "<<end-start<<endl;
    
         cout<<"BOARD"<<endl;
     

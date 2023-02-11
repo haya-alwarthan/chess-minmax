@@ -70,6 +70,7 @@ void king(Node& root, int row, int col, bool side);
 
 
 // ==================== MINIMAX WITH ALPHA-BETA AND PREVIOUS MOVES VECTOR ==========
+double minimax(Node& root, Node& best, int depth, bool state);
 double minimax_alpha_beta(Node& root, Node& best, int depth, bool state, double alpha, double beta);
 extern vector<string> prev_moves;
 extern int static_evals;
